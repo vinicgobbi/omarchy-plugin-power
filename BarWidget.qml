@@ -1,42 +1,63 @@
 import QtQuick
 import Quickshell
-import Quickshell.Services.UPower
+import Quickshell.Io
 import qs.Ui
 
-// Minimal bar-widget starter: shows the battery icon/percentage and reacts
-// to a left click. Replace the body of onPressed and the icon/text logic
-// with whatever this plugin is meant to do.
+// Bar icon that hosts the power menu popup (Panel.qml): lock, logout,
+// reboot, shutdown. Follows the clock/tailscale pattern — this widget owns
+// the bar slot and forwards open/close to the panel it loads.
 BarWidget {
   id: root
   moduleName: "vinicgobbi.power"
 
-  readonly property var device: UPower.displayDevice
-  readonly property bool present: !!(device && device.isPresent)
-  readonly property int percentage: present ? Math.round(device.percentage * 100) : 0
-  readonly property bool charging: present && device.state === UPowerDeviceState.Charging
+  readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
 
-  visible: present
+  function open() { if (panelLoader.item) panelLoader.item.open() }
+  function close() { if (panelLoader.item) panelLoader.item.close() }
+  function togglePanel() { if (panelLoader.item) panelLoader.item.toggle() }
+
+  function injectPanel() {
+    var target = panelLoader.item
+    if (!target) return
+    if ("bar" in target) target.bar = root.bar
+    if ("settings" in target) target.settings = root.settings
+    if ("anchorItem" in target) target.anchorItem = button
+    if ("hostWidget" in target) target.hostWidget = root
+  }
+
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
 
-  function batteryIcon() {
-    if (charging) return "󰂄"
-    if (percentage >= 90) return "󰁹"
-    if (percentage >= 60) return "󰂀"
-    if (percentage >= 30) return "󰁾"
-    if (percentage >= 10) return "󰁻"
-    return "󰁺"
+  onBarChanged: injectPanel()
+  onSettingsChanged: injectPanel()
+
+  Loader {
+    id: panelLoader
+    active: true
+    source: Qt.resolvedUrl("Panel.qml")
+    onLoaded: {
+      root.injectPanel()
+      Qt.callLater(root.injectPanel)
+    }
+  }
+
+  IpcHandler {
+    target: "vinicgobbi.power"
+
+    function open(): void { root.open() }
+    function close(): void { root.close() }
+    function show(): void { root.open() }
+    function hide(): void { root.close() }
+    function toggle(): void { root.togglePanel() }
   }
 
   BarIconButton {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: root.batteryIcon()
-    tooltipText: root.percentage + "% battery"
-
-    onPressed: function(b) {
-      // TODO: hook up whatever this widget should do on click.
-    }
+    text: "󰐥"
+    tooltipText: "Power menu"
+    active: root.opened
+    onPressed: function(b) { root.togglePanel() }
   }
 }

@@ -1,7 +1,7 @@
 # omarchy-plugin-power
 
-Bar-widget plugin for [Omarchy](https://omarchy.org/) shell. Shows battery
-status and reacts to clicks — starting point for a custom power widget.
+Bar-widget plugin for [Omarchy](https://omarchy.org/) shell. Adds a power
+icon to the bar that opens a popup with Lock, Logout, Reboot, and Shutdown.
 
 ## Development
 
@@ -35,4 +35,6 @@ omarchy plugin add <git-url> --enable
 ## Structure
 
 - `manifest.json` — plugin metadata (id, kind, entry point)
-- `BarWidget.qml` — the bar icon/label and its click behavior
+- `BarWidget.qml` — the bar icon and popup open/close plumbing
+- `Panel.qml` — the popup itself: Lock, Logout, Reboot, Shutdown rows,
+  each running the matching `omarchy-system-*` command
