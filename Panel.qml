@@ -66,27 +66,46 @@ Panel {
         width: parent.width
         spacing: Style.space(6)
 
-        Column {
+        Item {
           width: parent.width
-          spacing: Style.space(2)
+          height: Math.max(userColumn.implicitHeight, aboutButton.implicitHeight)
 
-          Text {
-            text: root.username
-            color: Color.accent
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.heading
-            font.bold: true
-            elide: Text.ElideRight
-            width: parent.width
+          Column {
+            id: userColumn
+            anchors.left: parent.left
+            anchors.right: aboutButton.left
+            anchors.rightMargin: Style.space(8)
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Style.space(2)
+
+            Text {
+              text: root.username
+              color: Color.accent
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.heading
+              font.bold: true
+              elide: Text.ElideRight
+              width: parent.width
+            }
+
+            Text {
+              text: root.hostname
+              color: root.dim
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              elide: Text.ElideRight
+              width: parent.width
+            }
           }
 
-          Text {
-            text: root.hostname
-            color: root.dim
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.caption
-            elide: Text.ElideRight
-            width: parent.width
+          PanelActionButton {
+            id: aboutButton
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            iconText: ""
+            tooltipText: "About this system"
+            foreground: root.foreground
+            onClicked: root.runAction("omarchy-launch-about")
           }
         }
 
