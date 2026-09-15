@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "vinicgobbi.power",
+  "name": "Power",
+  "version": "0.1.0",
+  "author": "vinicgobbi",
+  "description": "Battery status widget for the Omarchy bar",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Power",
+    "description": "Battery status widget for the Omarchy bar",
+    "category": "System",
+    "defaultSection": "right",
+    "allowMultiple": false
+  }
+}
