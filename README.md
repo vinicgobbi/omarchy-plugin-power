@@ -42,3 +42,20 @@ omarchy plugin add <git-url> --enable
 - `BarWidget.qml` — the bar icon and popup open/close plumbing
 - `Panel.qml` — the popup itself: Lock, Logout, Reboot, Shutdown rows,
   each running the matching `omarchy-system-*` command
+
+## Commits and releases
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
+and are checked with [Commitizen](https://commitizen-tools.github.io/commitizen/):
+
+```bash
+pipx install commitizen
+cz commit   # interactive, conventional-commits-compliant commit
+```
+
+Every push to `main` runs `.github/workflows/release.yml`, which uses
+Commitizen to bump `manifest.json`'s version and the changelog based on
+the commit types since the last release, tags it (`vX.Y.Z`), and
+publishes a GitHub Release with the changelog entry. A commit that
+doesn't warrant a version bump (no `feat`/`fix`/`BREAKING CHANGE`
+commits since the last release) is a no-op — no tag, no release.
