@@ -66,6 +66,7 @@ Panel {
               width: (topRow.width - topRow.spacing * (root.topActions.length - 1)) / root.topActions.length
               implicitHeight: Style.space(64)
               foreground: modelData.destructive ? root.urgent : root.foreground
+              bordered: true
 
               MouseArea {
                 anchors.fill: parent
@@ -105,6 +106,7 @@ Panel {
           width: column.width
           implicitHeight: Style.space(40)
           foreground: root.foreground
+          bordered: true
 
           MouseArea {
             anchors.fill: parent
