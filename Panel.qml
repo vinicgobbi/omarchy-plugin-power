@@ -102,6 +102,8 @@ Panel {
             id: aboutButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
+            size: Style.space(32)
+            fontSize: Style.font.heading
             iconText: ""
             tooltipText: "About this system"
             foreground: root.foreground
