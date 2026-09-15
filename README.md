@@ -13,11 +13,15 @@ ln -s "$(pwd)" ~/.config/omarchy/plugins/vinicgobbi.power
 omarchy plugin enable vinicgobbi.power
 ```
 
-Saving any file under `~/.config/omarchy/plugins/` reloads plugin code
-automatically. If a change doesn't apply, force it with:
+Saving `BarWidget.qml` (the plugin's entry point) hot-reloads on its own.
+`Panel.qml` is loaded dynamically through a `Loader`, and the shell's QML
+engine caches that compiled component by file path — editing it alone
+does **not** hot-reload, even though the shell logs "Local plugin
+changed, reloading". If the popup doesn't reflect a `Panel.qml` change,
+fully restart the shell instead:
 
 ```bash
-omarchy-shell shell rescanPlugins
+omarchy restart shell
 ```
 
 Validate the manifest before publishing:
