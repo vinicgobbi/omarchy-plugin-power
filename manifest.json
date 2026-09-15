@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "vinicgobbi.power",
+  "name": "Power",
+  "version": "0.1.0",
+  "author": "vinicgobbi",
+  "description": "Power menu: lock, logout, reboot, and shutdown",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Power",
+    "description": "Power menu: lock, logout, reboot, and shutdown",
+    "category": "System",
+    "defaultSection": "right",
+    "allowMultiple": false
+  }
+}
