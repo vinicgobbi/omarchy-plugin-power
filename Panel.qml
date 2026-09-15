@@ -72,7 +72,7 @@ Panel {
 
           Text {
             text: root.username
-            color: root.foreground
+            color: Color.accent
             font.family: root.fontFamily
             font.pixelSize: Style.font.heading
             font.bold: true
@@ -88,6 +88,10 @@ Panel {
             elide: Text.ElideRight
             width: parent.width
           }
+        }
+
+        PanelSeparator {
+          foreground: root.foreground
         }
 
         Row {
