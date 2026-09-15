@@ -1,4 +1,6 @@
 import QtQuick
+import Quickshell
+import Quickshell.Io
 import qs.Commons
 import qs.Ui
 
@@ -15,7 +17,19 @@ Panel {
 
   readonly property color foreground: bar ? bar.foreground : Color.foreground
   readonly property color urgent: bar ? bar.urgent : Color.urgent
+  readonly property color dim: Qt.darker(foreground, 1.55)
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
+
+  property string detectedHostname: ""
+  readonly property string username: Quickshell.env("USER") || Quickshell.env("LOGNAME") || "user"
+  readonly property string hostname: Quickshell.env("HOSTNAME") || root.detectedHostname || Quickshell.env("HOST") || "host"
+
+  FileView {
+    path: "/etc/hostname"
+    watchChanges: false
+    printErrors: false
+    onLoaded: root.detectedHostname = String(text() || "").trim()
+  }
 
   readonly property var topActions: [
     { icon: "󰐥", label: "Shutdown", command: "omarchy-system-shutdown", destructive: true },
@@ -51,6 +65,30 @@ Panel {
         id: column
         width: parent.width
         spacing: Style.space(6)
+
+        Column {
+          width: parent.width
+          spacing: Style.space(2)
+
+          Text {
+            text: root.username
+            color: root.foreground
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.heading
+            font.bold: true
+            elide: Text.ElideRight
+            width: parent.width
+          }
+
+          Text {
+            text: root.hostname
+            color: root.dim
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            elide: Text.ElideRight
+            width: parent.width
+          }
+        }
 
         Row {
           id: topRow
