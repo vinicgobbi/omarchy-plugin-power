@@ -1,61 +1,37 @@
 # omarchy-plugin-power
 
-Bar-widget plugin for [Omarchy](https://omarchy.org/) shell. Adds a power
-icon to the bar that opens a popup with Lock, Logout, Reboot, and Shutdown.
+A power menu bar-widget for the [Omarchy](https://omarchy.org/) shell. Adds
+a power icon to the bar; clicking it opens a popup with your user and host
+info and buttons for Shutdown, Reboot, Logout, and Lock.
 
-## Development
+Every action calls the same native `omarchy-system-*` commands the built-in
+Omarchy menu uses, so you get the same confirmation OSDs and behavior.
 
-Symlink this repo into your Omarchy plugins directory so edits hot-reload
-without reinstalling:
-
-```bash
-ln -s "$(pwd)" ~/.config/omarchy/plugins/vinicgobbi.power
-omarchy plugin enable vinicgobbi.power
-```
-
-Saving `BarWidget.qml` (the plugin's entry point) hot-reloads on its own.
-`Panel.qml` is loaded dynamically through a `Loader`, and the shell's QML
-engine caches that compiled component by file path — editing it alone
-does **not** hot-reload, even though the shell logs "Local plugin
-changed, reloading". If the popup doesn't reflect a `Panel.qml` change,
-fully restart the shell instead:
+## Install
 
 ```bash
-omarchy restart shell
+omarchy plugin add https://github.com/vinicgobbi/omarchy-plugin-power.git --enable
 ```
 
-Validate the manifest before publishing:
+When enabling, pick which bar section (left/center/right) you want the
+power icon in.
+
+## Usage
+
+Click the power icon in the bar to open the menu:
+
+- **Shutdown**, **Reboot**, **Logout** — side by side at the top
+- **Lock** — full-width button below them
+- An info icon next to your username opens the native "About this
+  system" window (`omarchy-launch-about`)
+
+## Uninstall
 
 ```bash
-omarchy plugin validate .
+omarchy plugin remove vinicgobbi.power
 ```
 
-## Install (once published)
+## Contributing
 
-```bash
-omarchy plugin add <git-url> --enable
-```
-
-## Structure
-
-- `manifest.json` — plugin metadata (id, kind, entry point)
-- `BarWidget.qml` — the bar icon and popup open/close plumbing
-- `Panel.qml` — the popup itself: Lock, Logout, Reboot, Shutdown rows,
-  each running the matching `omarchy-system-*` command
-
-## Commits and releases
-
-Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
-and are checked with [Commitizen](https://commitizen-tools.github.io/commitizen/):
-
-```bash
-pipx install commitizen
-cz commit   # interactive, conventional-commits-compliant commit
-```
-
-Every push to `main` runs `.github/workflows/release.yml`, which uses
-Commitizen to bump `manifest.json`'s version and the changelog based on
-the commit types since the last release, tags it (`vX.Y.Z`), and
-publishes a GitHub Release with the changelog entry. A commit that
-doesn't warrant a version bump (no `feat`/`fix`/`BREAKING CHANGE`
-commits since the last release) is a no-op — no tag, no release.
+See [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, the plugin's file
+structure, and the commit/release process.
