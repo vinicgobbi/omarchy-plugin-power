@@ -55,51 +55,46 @@ Panel {
         Repeater {
           model: root.actions
 
-          Row {
-            id: actionRow
+          CursorSurface {
+            id: surface
             required property var modelData
             width: column.width
+            implicitHeight: Style.space(40)
+            foreground: modelData.destructive ? root.urgent : root.foreground
 
-            CursorSurface {
-              id: surface
-              width: actionRow.width
-              implicitHeight: Style.space(40)
-              foreground: modelData.destructive ? root.urgent : root.foreground
+            MouseArea {
+              anchors.fill: parent
+              hoverEnabled: true
+              cursorShape: Qt.PointingHandCursor
+              onEntered: surface.hasCursor = true
+              onExited: surface.hasCursor = false
+              onClicked: root.runAction(surface.modelData.command)
+            }
 
-              MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onEntered: surface.hasCursor = true
-                onExited: surface.hasCursor = false
-                onClicked: root.runAction(modelData.command)
+            Row {
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              anchors.leftMargin: Style.space(10)
+              anchors.rightMargin: Style.space(10)
+              spacing: Style.space(10)
+
+              Text {
+                text: surface.modelData.icon
+                color: surface.modelData.destructive ? root.urgent : root.foreground
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.body
+                width: Style.space(20)
+                horizontalAlignment: Text.AlignHCenter
+                anchors.verticalCenter: parent.verticalCenter
               }
 
-              Row {
-                anchors.left: parent.left
-                anchors.right: parent.right
+              Text {
+                text: surface.modelData.label
+                color: surface.modelData.destructive ? root.urgent : root.foreground
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.body
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: Style.space(10)
-                anchors.rightMargin: Style.space(10)
-                spacing: Style.space(10)
-
-                Text {
-                  text: modelData.icon
-                  color: modelData.destructive ? root.urgent : root.foreground
-                  font.family: root.fontFamily
-                  font.pixelSize: Style.font.body
-                  width: Style.space(20)
-                  horizontalAlignment: Text.AlignHCenter
-                  anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Text {
-                  text: modelData.label
-                  color: modelData.destructive ? root.urgent : root.foreground
-                  font.family: root.fontFamily
-                  font.pixelSize: Style.font.body
-                  anchors.verticalCenter: parent.verticalCenter
-                }
               }
             }
           }
