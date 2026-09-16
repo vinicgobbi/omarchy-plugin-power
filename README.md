@@ -35,3 +35,7 @@ omarchy plugin remove vinicgobbi.power
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for local setup, the plugin's file
 structure, and the commit/release process.
+
+## License
+
+[MIT](LICENSE)
