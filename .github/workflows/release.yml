@@ -1,14 +1,12 @@
 name: Bump version and release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch: {}
 
 jobs:
   bump-version:
     runs-on: ubuntu-latest
-    if: "!startsWith(github.event.head_commit.message, 'bump:')"
+    if: github.ref == 'refs/heads/main'
     concurrency:
       group: release
       cancel-in-progress: false
