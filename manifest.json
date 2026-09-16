@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "vinicgobbi.power",
   "name": "Power",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "author": "vinicgobbi",
   "description": "Power menu: lock, logout, reboot, and shutdown",
   "kinds": [
