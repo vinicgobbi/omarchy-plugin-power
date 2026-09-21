@@ -56,6 +56,15 @@ Panel {
     return list
   }
 
+  readonly property var profileActions: {
+    var list = []
+    for (var i = 0; i < root.profiles.length; i++) {
+      var name = String(root.profiles[i])
+      list.push({ icon: root.profileIcon(name), label: root.profileLabel(name), profile: name, current: root.activeProfile === name })
+    }
+    return list
+  }
+
   readonly property string stateScript: [
     "flag() { \"$@\" >/dev/null 2>&1 && echo 1 || echo 0; }",
     "printf 'stayAwake\\t%s\\n' \"$(omarchy-toggle-idle status | jq -r 'if .enabled then 1 else 0 end')\"",
@@ -169,7 +178,7 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(280))
+    contentWidth: panel.fittedContentWidth(Style.space(300))
     contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
     PanelKeyCatcher {
@@ -241,7 +250,10 @@ Panel {
             foreground: root.foreground
           }
 
-          TileRow { actions: root.topActions }
+          TileRow {
+            actions: root.topActions
+            onActivated: function(action) { root.runAction(action.command) }
+          }
 
           CursorSurface {
             id: lockSurface
@@ -287,7 +299,10 @@ Panel {
             }
           }
 
-          TileRow { actions: root.sleepActions }
+          TileRow {
+            actions: root.sleepActions
+            onActivated: function(action) { root.runAction(action.command) }
+          }
 
           PanelSeparator {
             foreground: root.foreground
@@ -305,30 +320,9 @@ Panel {
               fontFamily: root.fontFamily
             }
 
-            Row {
-              id: profileRow
-              width: parent.width
-              spacing: Style.space(6)
-
-              Repeater {
-                model: root.profiles
-
-                Button {
-                  required property var modelData
-                  width: (profileRow.width - profileRow.spacing * (root.profiles.length - 1)) / root.profiles.length
-                  iconText: root.profileIcon(String(modelData))
-                  iconSize: Style.font.title
-                  text: root.profileLabel(String(modelData))
-                  fontSize: Style.font.bodySmall
-                  foreground: root.foreground
-                  fontFamily: root.fontFamily
-                  horizontalPadding: Style.spacing.controlPaddingX
-                  verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
-                  bordered: true
-                  active: root.activeProfile === modelData
-                  onClicked: root.setProfile(String(modelData))
-                }
-              }
+            TileRow {
+              actions: root.profileActions
+              onActivated: function(action) { root.setProfile(action.profile) }
             }
           }
 
@@ -342,14 +336,14 @@ Panel {
 
             SwitchRow {
               label: "Stay Awake"
-              description: "Disable idle lock and screensaver"
+              description: "No idle lock or screensaver"
               checked: root.stayAwake
               onToggled: root.toggleSwitch("stayAwake", ["omarchy-toggle-idle"])
             }
 
             SwitchRow {
               label: "Screensaver"
-              description: "Start the screensaver when idle"
+              description: "Run the screensaver when idle"
               checked: !root.screensaverOff
               onToggled: root.toggleSwitch("screensaverOff", ["omarchy-toggle-screensaver"])
             }
@@ -369,9 +363,11 @@ Panel {
   component ActionTile: CursorSurface {
     id: tile
     property var action: ({})
+    signal activated()
 
     implicitHeight: Style.space(64)
     foreground: action.destructive ? root.urgent : root.foreground
+    current: action.current === true
     bordered: true
 
     MouseArea {
@@ -380,7 +376,7 @@ Panel {
       cursorShape: Qt.PointingHandCursor
       onEntered: tile.hasCursor = true
       onExited: tile.hasCursor = false
-      onClicked: root.runAction(tile.action.command)
+      onClicked: tile.activated()
     }
 
     Column {
@@ -408,6 +404,7 @@ Panel {
   component TileRow: Row {
     id: tileRow
     property var actions: []
+    signal activated(var action)
 
     width: parent.width
     spacing: Style.space(6)
@@ -420,6 +417,7 @@ Panel {
         required property var modelData
         action: modelData
         width: (tileRow.width - tileRow.spacing * (tileRow.actions.length - 1)) / tileRow.actions.length
+        onActivated: tileRow.activated(modelData)
       }
     }
   }
