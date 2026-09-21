@@ -6,7 +6,7 @@ import qs.Ui
 
 // Power menu popup. Mirrors the native Omarchy "System" menu (lock, suspend,
 // hibernate, screensaver, logout, reboot, shutdown) and adds the
-// Stay Awake / Screensaver / Suspend switches.
+// Stay Awake / Screensaver switches.
 Panel {
   id: root
   moduleName: "vinicgobbi.power"
@@ -270,13 +270,6 @@ Panel {
               description: "Run the screensaver when idle"
               checked: !root.screensaverOff
               onToggled: root.toggleSwitch("screensaverOff", ["omarchy-toggle-screensaver"])
-            }
-
-            SwitchRow {
-              label: "Suspend"
-              description: "Show Suspend in this menu"
-              checked: !root.suspendOff
-              onToggled: root.toggleSwitch("suspendOff", ["omarchy-toggle-suspend"])
             }
           }
         }
