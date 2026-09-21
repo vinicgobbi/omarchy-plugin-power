@@ -33,9 +33,9 @@ omarchy plugin validate .
 - `BarWidget.qml` — the bar icon and popup open/close plumbing
 - `Panel.qml` — the popup itself: user/host header with an About-system
   button, action tiles (Shutdown/Reboot/Logout, Lock, Suspend/Hibernate/
-  Screensaver) running the matching native commands, the power profile
-  picker, and the Stay Awake/Screensaver/Suspend switches. State (toggles,
-  hibernation support, active profile) is read from the `omarchy-*` CLI
+  Screensaver) running the matching native commands, and the Stay Awake/
+  Screensaver/Suspend switches. State (toggles, hibernation support) is
+  read from the `omarchy-*` CLI
   when the popup opens and every 5 seconds while it's open.
 
 ## Commits and releases

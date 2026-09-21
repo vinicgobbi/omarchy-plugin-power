@@ -5,8 +5,8 @@ import qs.Commons
 import qs.Ui
 
 // Power menu popup. Mirrors the native Omarchy "System" menu (lock, suspend,
-// hibernate, screensaver, logout, reboot, shutdown) and adds the power
-// profile picker plus the Stay Awake / Screensaver / Suspend switches.
+// hibernate, screensaver, logout, reboot, shutdown) and adds the
+// Stay Awake / Screensaver / Suspend switches.
 Panel {
   id: root
   moduleName: "vinicgobbi.power"
@@ -36,8 +36,6 @@ Panel {
   property bool screensaverOff: false
   property bool suspendOff: false
   property bool hibernateAvailable: false
-  property var profiles: []
-  property string activeProfile: ""
 
   readonly property var topActions: [
     { icon: "󰐥", label: "Shutdown", command: "omarchy-system-shutdown", destructive: true },
@@ -56,15 +54,6 @@ Panel {
     return list
   }
 
-  readonly property var profileActions: {
-    var list = []
-    for (var i = 0; i < root.profiles.length; i++) {
-      var name = String(root.profiles[i])
-      list.push({ icon: root.profileIcon(name), label: root.profileLabel(name), profile: name, current: root.activeProfile === name })
-    }
-    return list
-  }
-
   readonly property string stateScript: [
     "flag() { \"$@\" >/dev/null 2>&1 && echo 1 || echo 0; }",
     "printf 'stayAwake\\t%s\\n' \"$(omarchy-toggle-idle status | jq -r 'if .enabled then 1 else 0 end')\"",
@@ -80,7 +69,6 @@ Panel {
 
   function refresh() {
     if (!stateProc.running) stateProc.running = true
-    if (!profilesProc.running) profilesProc.running = true
   }
 
   function parseState(raw) {
@@ -96,37 +84,7 @@ Panel {
     }
   }
 
-  function parseProfiles(raw) {
-    var list = []
-    var active = ""
-    var lines = String(raw || "").split("\n")
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i].trim()
-      if (!line) continue
-      var parts = line.split("\t")
-      list.push(parts[0])
-      if (parts[1] === "1") active = parts[0]
-    }
-    if (list.length === 0) return
-    root.profiles = list
-    root.activeProfile = active
-  }
-
-  function profileIcon(name) {
-    if (name === "power-saver") return "󰌪"
-    if (name === "balanced") return "󰊚"
-    if (name === "performance") return "󰓅"
-    return "󰊚"
-  }
-
-  function profileLabel(name) {
-    var words = String(name).split("-")
-    for (var i = 0; i < words.length; i++) words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1)
-    return words.join(" ")
-  }
-
-  // Argv arrays only (no shell): the profile name comes from the system's
-  // own list and is passed as a single argument.
+  // Argv arrays only, no shell.
   function runCommand(argv) {
     if (actionProc.running) return false
     actionProc.command = argv
@@ -140,12 +98,6 @@ Panel {
     runCommand(argv)
   }
 
-  function setProfile(profile) {
-    if (!profile || actionProc.running) return
-    root.activeProfile = profile
-    runCommand(["omarchy-powerprofiles-set", "autodetect", profile])
-  }
-
   onOpenedChanged: if (opened) refresh()
   Component.onCompleted: refresh()
 
@@ -153,12 +105,6 @@ Panel {
     id: stateProc
     command: ["bash", "-c", root.stateScript]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.parseState(text) }
-  }
-
-  Process {
-    id: profilesProc
-    command: ["omarchy-powerprofiles-list", "--active-state"]
-    stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.parseProfiles(text) }
   }
 
   Process {
@@ -306,28 +252,6 @@ Panel {
 
           PanelSeparator {
             foreground: root.foreground
-            visible: root.profiles.length > 0
-          }
-
-          Column {
-            visible: root.profiles.length > 0
-            width: parent.width
-            spacing: Style.space(10)
-
-            PanelSectionHeader {
-              text: "POWER PROFILE"
-              foreground: root.foreground
-              fontFamily: root.fontFamily
-            }
-
-            TileRow {
-              actions: root.profileActions
-              onActivated: function(action) { root.setProfile(action.profile) }
-            }
-          }
-
-          PanelSeparator {
-            foreground: root.foreground
           }
 
           Column {
@@ -367,7 +291,6 @@ Panel {
 
     implicitHeight: Style.space(64)
     foreground: action.destructive ? root.urgent : root.foreground
-    current: action.current === true
     bordered: true
 
     MouseArea {
