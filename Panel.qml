@@ -125,7 +125,7 @@ Panel {
     return true
   }
 
-  function toggle(prop, argv) {
+  function toggleSwitch(prop, argv) {
     if (actionProc.running) return
     root[prop] = !root[prop]
     runCommand(argv)
@@ -344,21 +344,21 @@ Panel {
               label: "Stay Awake"
               description: "Disable idle lock and screensaver"
               checked: root.stayAwake
-              onToggled: root.toggle("stayAwake", ["omarchy-toggle-idle"])
+              onToggled: root.toggleSwitch("stayAwake", ["omarchy-toggle-idle"])
             }
 
             SwitchRow {
               label: "Screensaver"
               description: "Start the screensaver when idle"
               checked: !root.screensaverOff
-              onToggled: root.toggle("screensaverOff", ["omarchy-toggle-screensaver"])
+              onToggled: root.toggleSwitch("screensaverOff", ["omarchy-toggle-screensaver"])
             }
 
             SwitchRow {
               label: "Suspend"
               description: "Show Suspend in this menu"
               checked: !root.suspendOff
-              onToggled: root.toggle("suspendOff", ["omarchy-toggle-suspend"])
+              onToggled: root.toggleSwitch("suspendOff", ["omarchy-toggle-suspend"])
             }
           }
         }
