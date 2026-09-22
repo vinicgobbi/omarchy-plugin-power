@@ -4,6 +4,8 @@
   "name": "Power Menu",
   "version": "0.1.0",
   "author": "vinicgobbi",
+  "license": "MIT",
+  "homepage": "https://github.com/vinicgobbi/omarchy-plugin-power",
   "description": "Power menu: lock, logout, reboot, and shutdown",
   "kinds": [
     "bar-widget"
