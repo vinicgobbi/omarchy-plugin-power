@@ -2,20 +2,32 @@
 
 ## Local setup
 
-Symlink this repo into your Omarchy plugins directory so edits hot-reload
-without reinstalling:
+`omarchy plugin validate .` rejects a plugin folder that contains a
+symlink, so a plain `ln -s` of this repo into
+`~/.config/omarchy/plugins/` won't load. Clone it there instead
+(a real, separate working copy — like `omarchy plugin add` would
+leave):
 
 ```bash
-ln -s "$(pwd)" ~/.config/omarchy/plugins/vinicgobbi.power
+git clone "$(pwd)" ~/.config/omarchy/plugins/vinicgobbi.power
 omarchy plugin enable vinicgobbi.power
 ```
 
-Saving `BarWidget.qml` (the plugin's entry point) hot-reloads on its own.
-`Panel.qml` is loaded dynamically through a `Loader`, and the shell's QML
-engine caches that compiled component by file path — editing it alone
-does **not** hot-reload, even though the shell logs "Local plugin
-changed, reloading". If the popup doesn't reflect a `Panel.qml` change,
-fully restart the shell instead:
+To pick up local edits without re-cloning, add this repo as a remote
+in the installed copy and pull:
+
+```bash
+git -C ~/.config/omarchy/plugins/vinicgobbi.power remote add dev "$(pwd)"
+git -C ~/.config/omarchy/plugins/vinicgobbi.power pull dev main
+```
+
+`BarWidget.qml` (the plugin's entry point) hot-reloads on its own once
+the installed copy is updated. `Panel.qml` is loaded dynamically
+through a `Loader`, and the shell's QML engine caches that compiled
+component by file path — editing it alone does **not** hot-reload,
+even though the shell logs "Local plugin changed, reloading". If the
+popup doesn't reflect a `Panel.qml` change, fully restart the shell
+instead:
 
 ```bash
 omarchy restart shell
