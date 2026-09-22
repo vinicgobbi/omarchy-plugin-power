@@ -1,4 +1,4 @@
-# Development
+# Contributing
 
 ## Local setup
 
@@ -37,6 +37,12 @@ omarchy plugin validate .
   Screensaver switches. State (toggles, hibernation support) is
   read from the `omarchy-*` CLI
   when the popup opens and every 5 seconds while it's open.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every push to `main` (and on pull
+requests) and validates `manifest.json` and every `.qml` file with
+`qmllint`, so a syntax error can't land on `main`.
 
 ## Commits and releases
 
