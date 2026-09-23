@@ -160,6 +160,7 @@ Panel {
               spacing: Style.space(2)
 
               Text {
+                textFormat: Text.PlainText
                 text: root.username
                 color: Color.accent
                 font.family: root.fontFamily
@@ -170,6 +171,7 @@ Panel {
               }
 
               Text {
+                textFormat: Text.PlainText
                 text: root.hostname
                 color: root.dim
                 font.family: root.fontFamily
