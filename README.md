@@ -18,6 +18,9 @@ Omarchy menu uses, so you get the same confirmation OSDs and behavior:
 - **Stay Awake** — disable idle lock and screensaver (`omarchy-toggle-idle`)
 - **Screensaver** — turn the idle screensaver on or off
   (`omarchy-toggle-screensaver`)
+- A gear icon next to your username shows a **Confirm** switch. When it
+  is on (off by default), Shutdown, Reboot and Logout ask before running.
+  The choice is saved as a bar widget setting (`confirm`)
 - An info icon next to your username opens the native "About this
   system" window (`omarchy-launch-about`)
 
