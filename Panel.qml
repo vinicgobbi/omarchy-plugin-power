@@ -37,10 +37,17 @@ Panel {
   property bool suspendOff: false
   property bool hibernateAvailable: false
 
+  // Ask before Shutdown / Reboot / Logout. Saved as a bar widget setting.
+  readonly property bool confirmEnabled: !!(settings && settings.confirm === true)
+  property bool showSettings: false
+  property var pendingAction: null
+  // Keeps the confirm tile's label while it fades out.
+  property var lastPendingAction: null
+
   readonly property var topActions: [
-    { icon: "󰐥", label: "Shutdown", command: "omarchy-system-shutdown", destructive: true },
-    { icon: "󰜉", label: "Reboot", command: "omarchy-system-reboot" },
-    { icon: "󰍃", label: "Logout", command: "omarchy-system-logout" }
+    { icon: "󰐥", label: "Shutdown", command: "omarchy-system-shutdown", destructive: true, confirm: true },
+    { icon: "󰜉", label: "Reboot", command: "omarchy-system-reboot", confirm: true },
+    { icon: "󰍃", label: "Logout", command: "omarchy-system-logout", confirm: true }
   ]
   readonly property var lockAction: { "icon": "󰌾", "label": "Lock", "command": "omarchy-system-lock" }
 
@@ -65,6 +72,19 @@ Panel {
   function runAction(command) {
     if (root.bar && typeof root.bar.run === "function") root.bar.run(command)
     root.close()
+  }
+
+  function requestAction(action) {
+    if (action.confirm && root.confirmEnabled) {
+      root.lastPendingAction = action
+      root.pendingAction = action
+    }
+    else root.runAction(action.command)
+  }
+
+  function setConfirm(on) {
+    if (root.bar && typeof root.bar.run === "function")
+      root.bar.run("omarchy bar set vinicgobbi.power confirm " + (on ? "true" : "false") + " --json")
   }
 
   function refresh() {
@@ -98,7 +118,10 @@ Panel {
     runCommand(argv)
   }
 
-  onOpenedChanged: if (opened) refresh()
+  onOpenedChanged: {
+    if (opened) refresh()
+    else { root.pendingAction = null; root.showSettings = false }
+  }
   Component.onCompleted: refresh()
 
   Process {
@@ -154,7 +177,7 @@ Panel {
             Column {
               id: userColumn
               anchors.left: parent.left
-              anchors.right: aboutButton.left
+              anchors.right: settingsButton.left
               anchors.rightMargin: Style.space(8)
               anchors.verticalCenter: parent.verticalCenter
               spacing: Style.space(2)
@@ -182,6 +205,19 @@ Panel {
             }
 
             PanelActionButton {
+              id: settingsButton
+              anchors.right: aboutButton.left
+              anchors.rightMargin: Style.space(4)
+              anchors.verticalCenter: parent.verticalCenter
+              size: Style.space(32)
+              fontSize: Style.font.heading
+              iconText: ""
+              tooltipText: "Settings"
+              foreground: root.showSettings ? Color.accent : root.foreground
+              onClicked: root.showSettings = !root.showSettings
+            }
+
+            PanelActionButton {
               id: aboutButton
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
@@ -198,9 +234,43 @@ Panel {
             foreground: root.foreground
           }
 
-          TileRow {
-            actions: root.topActions
-            onActivated: function(action) { root.runAction(action.command) }
+          SwitchRow {
+            visible: root.showSettings
+            label: "Confirm"
+            description: "Ask before shutdown, reboot, logout"
+            checked: root.confirmEnabled
+            onToggled: root.setConfirm(!root.confirmEnabled)
+          }
+
+          // Both rows share one slot, so confirming swaps them in place
+          // with a fade instead of changing the panel height.
+          Item {
+            width: parent.width
+            height: topRow.implicitHeight
+
+            TileRow {
+              id: topRow
+              actions: root.topActions
+              opacity: root.pendingAction === null ? 1 : 0
+              enabled: root.pendingAction === null
+              Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+              onActivated: function(action) { root.requestAction(action) }
+            }
+
+            TileRow {
+              actions: [
+                { icon: "\uf00d", label: "Cancel", cancel: true },
+                { icon: root.lastPendingAction ? root.lastPendingAction.icon : "", label: root.lastPendingAction ? root.lastPendingAction.label + "?" : "", destructive: true }
+              ]
+              opacity: root.pendingAction === null ? 0 : 1
+              enabled: root.pendingAction !== null
+              Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+              onActivated: function(action) {
+                var pending = root.pendingAction
+                root.pendingAction = null
+                if (!action.cancel && pending) root.runAction(pending.command)
+              }
+            }
           }
 
           CursorSurface {
