@@ -1,3 +1,9 @@
+## v0.2.0 (2026-10-03)
+
+### Feat
+
+- add optional confirmation for shutdown, reboot and logout
+
 ## v0.1.1 (2026-10-03)
 
 ### Fix
