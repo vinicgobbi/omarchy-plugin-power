@@ -44,10 +44,18 @@ Panel {
   // Keeps the confirm tile's label while it fades out.
   property var lastPendingAction: null
 
+  // Omarchy 4.5.0 folded the separate per-action system commands into one
+  // `omarchy-system <action>` command; earlier releases still ship the old
+  // binaries. Prefer the grouped form and fall back when it is missing.
+  function systemCommand(action) {
+    var legacy = "omarchy-system-" + action
+    return "if command -v omarchy-system >/dev/null 2>&1; then omarchy-system " + action + "; else " + legacy + "; fi"
+  }
+
   readonly property var topActions: [
-    { icon: "󰐥", label: "Shutdown", command: "omarchy-system-shutdown", destructive: true, confirm: true },
-    { icon: "󰜉", label: "Reboot", command: "omarchy-system-reboot", confirm: true },
-    { icon: "󰍃", label: "Logout", command: "omarchy-system-logout", confirm: true }
+    { icon: "󰐥", label: "Shutdown", command: root.systemCommand("shutdown"), destructive: true, confirm: true },
+    { icon: "󰜉", label: "Reboot", command: root.systemCommand("reboot"), confirm: true },
+    { icon: "󰍃", label: "Logout", command: root.systemCommand("logout"), confirm: true }
   ]
   readonly property var lockAction: { "icon": "󰌾", "label": "Lock", "command": "omarchy-system-lock" }
 
